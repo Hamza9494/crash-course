@@ -20,15 +20,27 @@ class ListingController extends Controller
      */
     public function create()
     {
-        //
+        return view('listings.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store()
+    public function store(Request $request)
     {
-        //
+        $validated_Job = $request->validate([
+            "title" => "required|min:12|max:42",
+            "comapny" => "unique:listings|required",
+            "location" => "required",
+            "email" => "email|required",
+            "website" => "required",
+            "tags" => "required|min:3",
+            "description" => "required"
+        ]);
+
+        Listing::create($validated_Job);
+
+        return redirect('/')->with('success', 'listing added successfully');
     }
 
     /**
