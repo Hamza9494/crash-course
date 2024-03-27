@@ -12,7 +12,7 @@ class ListingController extends Controller
      */
     public function index()
     {
-        return view('listings.index',  ['listings' => Listing::latest()->filter(request('tag'), request('search'))->get()]);
+        return view('listings.index',  ['listings' => Listing::latest()->filter(request('tag'), request('search'))->paginate(4)]);
     }
 
     /**
@@ -28,6 +28,7 @@ class ListingController extends Controller
      */
     public function store(Request $request)
     {
+
         $validated_Job = $request->validate([
             "title" => "required|min:12|max:42",
             "comapny" => "unique:listings|required",
@@ -37,7 +38,9 @@ class ListingController extends Controller
             "tags" => "required|min:3",
             "description" => "required"
         ]);
-
+        if ($request->hasFile('logo')) {
+            $validated_Job['logo'] = $request->file('logo')->store('logos', 'public');
+        };
         Listing::create($validated_Job);
 
         return redirect('/')->with('success', 'listing added successfully');
