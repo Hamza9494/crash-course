@@ -57,17 +57,31 @@ class ListingController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit()
+    public function edit(Listing $listing)
     {
-        //
+        return view('listings.edit', ['listing' => $listing]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update()
+    public function update(Listing $listing)
     {
-        //
+        $validated_Job = request()->validate([
+            "title" => "required|min:12|max:42",
+            "comapny" => "required",
+            "location" => "required",
+            "email" => "email|required",
+            "website" => "required",
+            "tags" => "required|min:3",
+            "description" => "required"
+        ]);
+        if (request()->hasFile('logo')) {
+            $validated_Job['logo'] = request()->file('logo')->store('logos', 'public');
+        };
+        $listing->update($validated_Job);
+
+        return redirect("/listings/$listing->id")->with('success', 'listing updated successfully');
     }
 
     /**
