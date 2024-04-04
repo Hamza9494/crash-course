@@ -41,6 +41,8 @@ class ListingController extends Controller
         if ($request->hasFile('logo')) {
             $validated_Job['logo'] = $request->file('logo')->store('logos', 'public');
         };
+
+        $validated_Job['user_id'] = auth()->id();
         Listing::create($validated_Job);
 
         return redirect('/')->with('success', 'listing added successfully');
@@ -91,5 +93,10 @@ class ListingController extends Controller
     {
         $listing->delete();
         return redirect('/')->with('success', 'listing deleted successfully');
+    }
+
+    public function manage()
+    {
+        return view('listings.manage', ['listings' => auth()->user()->listings()->get()]);
     }
 }
